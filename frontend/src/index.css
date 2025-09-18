@@ -18,3 +18,10 @@ html {
   }
 }
  
+.input-box {
+  @apply w-full flex justify-between gap-3 text-sm text-black bg-slate-100/50 rounded px-4 py-3 mb-4 mt-3 border border-slate-200 outline-none ;
+}
+
+.btn-primary {
+  @apply w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-600/15 hover:text-blue-600 transition-colors mb-4 cursor-pointer ;
+}
