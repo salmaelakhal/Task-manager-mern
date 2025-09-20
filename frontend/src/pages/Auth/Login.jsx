@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AuthLayout from "../../components/layouts/AuthLayout";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Input from "../../components/Inputs/Input";
 import { validateEmail } from "../../utils/helper";
 
@@ -9,7 +9,6 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const navigate = useNavigate();
 
   // handle login forn submit
   const handleLogin = async (e) => {
@@ -67,13 +66,14 @@ function Login() {
             Log In
           </button>
 
-          <p className="text-center text-sm text-slate-600"></p>
+          <p className="text-center text-sm text-slate-600">
             Don't have an account?{" "}
             <Link
               className="text-blue-600 cursor-pointer hover:underline"
               to="/signup">
               Sign Up
             </Link>
+            </p>
          </form>
       </div>
     </AuthLayout>
