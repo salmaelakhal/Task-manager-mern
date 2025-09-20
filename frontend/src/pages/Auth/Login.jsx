@@ -27,6 +27,11 @@ function Login() {
     setError("");
 
     // Login API call
+    try {
+      
+    } catch (error) {
+      
+    }
   };
 
   return (
