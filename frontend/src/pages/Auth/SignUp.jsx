@@ -7,6 +7,7 @@ import ProfilePhotoSelector from "../../components/Inputs/ProfilePhotoSelector";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import { UserContext } from "../../context/userContext";
+import uploadImage from "../../utils/uploadImage";
 
 function Signup() {
   const [profilePic, setProfilePic] = useState(null);
@@ -23,6 +24,9 @@ function Signup() {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    
+    let profileImageUrl = '';
+
 
     // Validation
     if (!fullName.trim()) {
@@ -46,10 +50,18 @@ function Signup() {
     // Signup API Call
 
     try {
+
+      if (profilePic ) {
+        const imgUploadRes = await uploadImage(profilePic);
+        profileImageUrl = imgUploadRes.imageUrl || "";
+      }
+
+
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         name: fullName,
         email,
         password,
+        profileImageUrl,
         adminInviteToken,
       });
 
@@ -62,7 +74,7 @@ function Signup() {
         //Redirect based on role
 
         if (role === "admin") {
-          Navigate("/admin/dashboard");
+          navigate("/admin/dashboard");
         } else {
           navigate("/user/dashboard");
         }
@@ -122,8 +134,8 @@ function Signup() {
 
             {/* Password Input */}
             <Input
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
+              value={adminInviteToken}
+              onChange={({ target }) => setAdminInviteToken(target.value)}
               label="Admin Invite Token"
               placeholder="6 Digit Code"
               type="text"
