@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import Input from "../../components/Inputs/Input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validateEmail } from "../../utils/helper";
 import ProfilePhotoSelector from "../../components/Inputs/ProfilePhotoSelector";
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATHS } from "../../utils/apiPaths";
+import { UserContext } from "../../context/userContext";
 
 function Signup() {
   const [profilePic, setProfilePic] = useState(null);
@@ -14,6 +17,9 @@ function Signup() {
 
   const [error, setError] = useState(null);
 
+  const { updateUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -37,24 +43,36 @@ function Signup() {
     setError("");
 
     // 👉 API CALL vers backend /api/users/register
+    // Signup API Call
+
     try {
-      // Exemple avec fetch
-      /*
-      const res = await fetch("http://localhost:8000/api/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
+        name: fullName,
+        email,
+        password,
+        adminInviteToken,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Signup failed");
+      const { token, role } = response.data;
 
-      // Sauvegarder token et redirect
-      localStorage.setItem("token", data.token);
-      navigate("/dashboard");
-      */
-    } catch (err) {
-      setError(err.message);
+      if (token) {
+        localStorage.setItem("token", token);
+        updateUser(response.data);
+
+        //Redirect based on role
+
+        if (role === "admin") {
+          Navigate("/admin/dashboard");
+        } else {
+          navigate("/user/dashboard");
+        }
+      }
+    } catch (error) {
+      if (error.response && error.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -67,7 +85,11 @@ function Signup() {
         </p>
 
         <form onSubmit={handleSignUp}>
-          <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} className="flex flex-col justify-center " />
+          <ProfilePhotoSelector
+            image={profilePic}
+            setImage={setProfilePic}
+            className="flex flex-col justify-center "
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* fullName input */}

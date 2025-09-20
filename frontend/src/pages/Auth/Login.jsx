@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import AuthLayout from "../../components/layouts/AuthLayout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Inputs/Input";
 import { validateEmail } from "../../utils/helper";
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATHS } from "../../utils/apiPaths";
+import { UserContext } from "../../context/userContext";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const {updateUser} = useContext(UserContext)
 
+  const navigate = useNavigate();
   // handle login forn submit
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,8 +24,8 @@ function Login() {
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
       return;
     }
 
@@ -28,11 +33,32 @@ function Login() {
 
     // Login API call
     try {
-      
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+        email,
+        password,
+      });
+
+      const { token, role } = response.data;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        updateUser(response.data)
+        // Redirect based on role
+        if (role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/user/dashboard");
+        }
+      }
     } catch (error) {
-      
+      if (error.response && error.data.message ) {
+        setError(error.response.data.message);
+      }else {
+        setError ("Something went wrong. Please try again.");
+      }
     }
   };
+
 
   return (
     <AuthLayout>
@@ -58,16 +84,13 @@ function Login() {
             value={password}
             onChange={({ target }) => setPassword(target.value)}
             label="Password"
-            placeholder="Min 8 characters"
+            placeholder="Min 6 characters"
             type="password"
           />
 
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-          <button
-            type="submit"
-            className="btn-primary"
-          >
+          <button type="submit" className="btn-primary">
             Log In
           </button>
 
@@ -75,11 +98,12 @@ function Login() {
             Don't have an account?{" "}
             <Link
               className="text-blue-600 cursor-pointer hover:underline"
-              to="/signup">
+              to="/signup"
+            >
               Sign Up
             </Link>
-            </p>
-         </form>
+          </p>
+        </form>
       </div>
     </AuthLayout>
   );
