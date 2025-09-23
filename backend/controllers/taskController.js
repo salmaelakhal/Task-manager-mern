@@ -315,7 +315,7 @@ const getDashboardData = async (req, res) => {
     ]);
 
     const taskDistribution = taskStatues.reduce((acc, status) => {
-        const formattedKey = status.replace9(/\s+/g, ""); // Reemove spaces for responses keys
+        const formattedKey = status.replace(/\s+/g, ""); // Reemove spaces for responses keys
         acc[formattedKey] = 
             taskDistributionRaw.find((item) => item._id === status)?.count || 0;
         return acc;
