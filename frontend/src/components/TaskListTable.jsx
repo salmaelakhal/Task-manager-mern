@@ -7,7 +7,7 @@ const TaskListTable = ({ tableData }) => {
         return "bg-green-100 text-green-500 border border-green-200";
       case "Pending":
         return "bg-purple-100 text-purple-500 border border-purple-200";
-      case "In Progress":
+      case "In-progress":
         return "bg-cyan-100 text-cyan-500 border border-cyan-200";
       default:
         return "bg-gray-100 text-gray-500 border border-gray-200";
@@ -41,6 +41,7 @@ const TaskListTable = ({ tableData }) => {
 
         <tbody>
           {tableData.map((task) => {
+            return (
             <tr key={task._id} className="border-t border-gray-200">
               <td className="my-3 mx-4 text-gray-700 text-[13px] line-clamp-1 overflow-hidden"> 
                 {task.title} </td>
@@ -59,12 +60,13 @@ const TaskListTable = ({ tableData }) => {
                 >
                   {task.priority}
                 </span>
-                Í
+                
               </td>
               <td className="py-4 px-4 text-gray-700 text-[13px] text-nowrap hidden md:table-cell">
                 {task.createdAt ? moment(task.createdAt).format('Do MMM YYYY') : 'N/A'}
               </td>
-            </tr>;
+            </tr>
+            );
           })}
         </tbody>
       </table>
