@@ -11,11 +11,11 @@ import ViewTaskDetails from "./pages/User/ViewTaskDetails";
 import PrivateRoute from "./routes/PrivateRoute";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import UserProvider, { UserContext } from "./context/userContext";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <UserProvider>
-      <div>
         <Router>
           <Routes>
             {/* Auth Routes */}
@@ -23,12 +23,16 @@ function App() {
             <Route path="/signUp" element={<SignUp />} />
 
             {/* Admin Routes */}
-            <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-              <Route path="/admin/dashboard" element={<Dashboard />} />
-              <Route path="/admin/tasks" element={<ManageTasks />} />
-              <Route path="/admin/create-task" element={<CreateTask />} />
-              <Route path="/admin/users" element={<ManageUsers />} />
-            </Route>
+<Route element={<PrivateRoute allowedRoles={["admin"]} />}>
+  <Route path="/admin/dashboard" element={<Dashboard />} />
+  <Route path="/admin/tasks" element={<ManageTasks />} />
+  <Route path="/admin/create-task" element={<CreateTask />} />
+  <Route path="/admin/users" element={<ManageUsers />} />
+
+  {/* redirect /admin → /admin/dashboard */}
+  <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+</Route>
+
 
             {/* User Routes */}
             <Route element={<PrivateRoute allowedRoles={["member"]} />}>
@@ -45,7 +49,15 @@ function App() {
 
           </Routes>
         </Router>
-      </div>
+
+      <Toaster toastOptions = {{
+        className: "",
+        style: {
+          fontSize: "13px",
+        }
+      }}
+      />
+
     </UserProvider>
   );
 }

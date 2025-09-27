@@ -1,9 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
+import DashboardLayout from '../../components/layouts/DashboardLayout'
 
-export default function ManageTasks() {
+const ManageTasks = () => {
+
+  const [allTasks, setAllTasks] = useState([])
+
   return (
-    <div>
-      
-    </div>
+    <Dashboard Layout activeMenu="Manage Tasks">
+      <div className="my-5">
+
+      </div>
+    </Dashboard>
   )
 }
+
+export default ManageTasks
+
+ 

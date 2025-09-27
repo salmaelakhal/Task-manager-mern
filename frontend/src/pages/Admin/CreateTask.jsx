@@ -8,13 +8,15 @@ import SelectDropdown from "../../components/Inputs/SelectDropdown";
 import SelectUsers from "../../components/Inputs/SelectUsers";
 import TodoListInput from "../../components/Inputs/TodoListInput";
 import AddAttachementsInput from "../../components/Inputs/AddAttachementsInput";
+import axiosInstance from "../../utils/axiosInstance";
+import { toast } from 'react-hot-toast';
 
 const CreateTask = () => {
   const location = useLocation();
   const { taskId } = location.state || {};
   const navigate = useNavigate();
 
-  const [taskData, setTaskData] = useState({
+  const [taskData, setTaskData] = useState({  
     title: "",
     description: "",
     priority: "Low",
@@ -41,7 +43,7 @@ const CreateTask = () => {
       title: "",
       description: "",
       priority: "Low",
-      dueDate: null,
+      dueDate: '',
       assignedTo: [],
       todoChecklist: [],
       attachements: [],
@@ -49,7 +51,32 @@ const CreateTask = () => {
   };
 
   // Create Task
-  const createTask = async () => {};
+  const createTask = async () => {
+    setLoading(true);
+
+    try {
+      const todolist = taskData.todoChecklist?.map((item) => ({
+        text: item,
+        completed: false,
+      }));
+
+      const response = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
+        ...taskData,
+        dueDate: new Date(taskData.dueDate).toISOString(),
+        todoChecklist: todolist,
+      });
+
+      toast.success("Task Created Successfully");
+
+      clearData();
+
+    } catch (error) {
+      console.error("Error creating task: ", error);
+      setLoading(false);
+    }finally {
+      setLoading(false);
+    }
+  };
 
   // UpdateTask
   const updateTask = async () => {};
