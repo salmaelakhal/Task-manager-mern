@@ -22,7 +22,7 @@ function Navbar({activeMenu}) {
     </button>
 
     <h2 className='text-lg font-medium text-black'>
-      Expense Tracker
+      Task Manager
     </h2>
 
     {openSideMenu && (
