@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import { LuFileSpreadsheet } from 'react-icons/lu';
+import TaskStatusTabs from '../../components/TaskStatusTabs';
 
 const ManageTasks = () => {
 
@@ -25,15 +26,18 @@ const ManageTasks = () => {
       setAllTasks(response.data?.tasks?.length > 0 ? response.data.tasks : []);
 
       // Map statusSummary data with fixed labels and order
-      const statusSummary = response.data?.statusSummary || {};
+// Correct
+const statusSummary = response.data?.summary || {};
 
-      const statusArray = [
-        { label: 'All', count: statusSummary.all || 0},
-        { label: 'Pending', count: statusSummary.pendingTasks || 0},
-        { label: 'In-progress', count: statusSummary.inProgressTasks || 0},
-        { label: 'Completed', count: statusSummary.completedTasks || 0},
-      ];
-      
+const statusArray = [
+  { label: 'All', count: statusSummary.all || 0 },
+  { label: 'Pending', count: statusSummary.pending || 0 },
+  { label: 'In-progress', count: statusSummary.inProgress || 0 },
+  { label: 'Completed', count: statusSummary.completed || 0 },
+];
+
+   console.log("All tasks response:", response.data);
+   
       setTabs(statusArray);
 
     } catch (error) {
@@ -41,6 +45,7 @@ const ManageTasks = () => {
     }
 
   };
+
 
   const handleClick = (taskData) => {
     navigate(`/admin/create-task`, {state: { taskId: taskData._id }})
@@ -64,12 +69,21 @@ const ManageTasks = () => {
             <h2 className="text-xl md:text-xl font-medium">My Tasks</h2>
 
             <button className="flex lg:hidden download-btn" onClick={handleDownloadReport}>
-              Download Report
               <LuFileSpreadsheet className='text-lg' />
             </button>
           </div>
-        </div>
 
+          {tabs?.[0]?.count > 0 && (
+            <div className="flex items-center gap-3">
+              <TaskStatusTabs tabs={tabs} activeTab={filterStatus} setActiveTab={setFilterStatus} />
+
+              <button className="hidden lg:flex download-btn" onClick={handleDownloadReport} >
+                <LuFileSpreadsheet className='text-lg' />
+                Download Report
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </DashboardLayout>
   )
