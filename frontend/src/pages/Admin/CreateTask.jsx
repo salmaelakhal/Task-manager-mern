@@ -60,6 +60,13 @@ const CreateTask = () => {
         completed: false,
       }));
 
+      console.log("Payload envoyé:", {
+  ...taskData,
+  dueDate: new Date(taskData.dueDate).toISOString(),
+  todoChecklist: taskData.todoChecklist,
+});
+
+
       const response = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
         ...taskData,
         dueDate: new Date(taskData.dueDate).toISOString(),
