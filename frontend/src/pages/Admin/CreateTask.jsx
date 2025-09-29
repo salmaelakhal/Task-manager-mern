@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { PRIORITY_DATA } from "../../utils/data";
 import { API_PATHS } from "../../utils/apiPaths";
@@ -9,14 +9,15 @@ import SelectUsers from "../../components/Inputs/SelectUsers";
 import TodoListInput from "../../components/Inputs/TodoListInput";
 import AddAttachementsInput from "../../components/Inputs/AddAttachementsInput";
 import axiosInstance from "../../utils/axiosInstance";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
+import  moment  from 'moment';
 
 const CreateTask = () => {
   const location = useLocation();
   const { taskId } = location.state || {};
   const navigate = useNavigate();
 
-  const [taskData, setTaskData] = useState({  
+  const [taskData, setTaskData] = useState({
     title: "",
     description: "",
     priority: "Low",
@@ -43,7 +44,7 @@ const CreateTask = () => {
       title: "",
       description: "",
       priority: "Low",
-      dueDate: '',
+      dueDate: "",
       assignedTo: [],
       todoChecklist: [],
       attachements: [],
@@ -61,11 +62,10 @@ const CreateTask = () => {
       }));
 
       console.log("Payload envoyé:", {
-  ...taskData,
-  dueDate: new Date(taskData.dueDate).toISOString(),
-  todoChecklist: taskData.todoChecklist,
-});
-
+        ...taskData,
+        dueDate: new Date(taskData.dueDate).toISOString(),
+        todoChecklist: taskData.todoChecklist,
+      });
 
       const response = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
         ...taskData,
@@ -76,11 +76,10 @@ const CreateTask = () => {
       toast.success("Task Created Successfully");
 
       clearData();
-
     } catch (error) {
       console.error("Error creating task: ", error);
       setLoading(false);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -112,7 +111,7 @@ const CreateTask = () => {
       return;
     }
 
-    if(taskData.todoChecklist?.length === 0) {
+    if (taskData.todoChecklist?.length === 0) {
       setError("Add atleast one todo task");
       return;
     }
@@ -123,14 +122,47 @@ const CreateTask = () => {
     }
 
     createTask();
-
   };
 
   // get Task info by ID
-  const getTaskDetailsByID = async () => {};
+  const getTaskDetailsByID = async () => {
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.TASKS.GET_TASK_BY_ID(taskId)
+      );
+      if (response.data) {
+        const taskInfo = response.data;
+        setCurrentTask(taskInfo);
+
+        setTaskData((prevState) => ({
+          title: taskInfo.title,
+          description: taskInfo.description,
+          priority: taskInfo.priority,
+          dueDate: taskInfo.dueDate
+            ? moment(taskInfo.dueDate).format("YYYY-MM-DD")
+            : null,
+            assignedTo: taskInfo?.assignedTo.map((item) => item?._id) || [],
+            todoChecklist:
+            taskInfo?.todoChecklist?.map((item) => item?.text) || [],
+            attachements: taskInfo?.attachements || [],
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   // Delete Task
   const deleteTask = async () => {};
+
+  useEffect(() => {
+    if(taskId){
+      getTaskDetailsByID(taskId)
+    }
+  
+    return () => {};
+  }, [taskId])
+  
 
   return (
     <DashboardLayout activeMenu="Create Task">
@@ -247,10 +279,10 @@ const CreateTask = () => {
               </label>
 
               <AddAttachementsInput
-              attachements={taskData?.attachements}
-              setAttchements={(value) =>
-                handleValueChange("attachements", value)
-              }
+                attachements={taskData?.attachements}
+                setAttchements={(value) =>
+                  handleValueChange("attachements", value)
+                }
               />
             </div>
 
@@ -258,9 +290,12 @@ const CreateTask = () => {
               <p className="text-xs font-medium text-red-500 mt-5">{error}</p>
             )}
             <div className="flex justify-end mt-7">
-              <button className="add-btn" onClick={handleSubmit} disabled={loading}>
+              <button
+                className="add-btn"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
                 {taskId ? "UPDATE TASK" : "CREATE TASK"}
-
               </button>
             </div>
           </div>
