@@ -17,6 +17,7 @@ const ManageTasks = () => {
 
   const navigate = useNavigate();
 
+
   const getAllTasks = async () => {
     try {
       const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS, {
