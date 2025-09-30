@@ -25,7 +25,8 @@ const handleDownloadReport = async () => {}
     getAllUsers();
 
     return () => {};
-  }, [])
+  }, []) 
+  
   return (
     <DashboardLayout activeMenu="Team Members">
       <div className="mt-5 mb-10">
