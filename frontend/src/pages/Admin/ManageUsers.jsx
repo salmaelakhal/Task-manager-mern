@@ -3,20 +3,32 @@ import DashboardLayout from '../../components/layouts/DashboardLayout'
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import { LuFileSpreadsheet } from 'react-icons/lu';
+import UserCard from '../../components/Cards/UserCard';
 
 const ManageUsers = () => {
   const [allUsers, setAllUsers] = useState([]);
 
   const getAllUsers = async () => {
-    try {
-      const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
-      if (response.data?.length > 0) {
-        setAllUsers(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
+  try {
+    const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
+    console.log("API Response full:", response);
+
+    // 👇 Vérifie bien la structure ici
+    console.log("API Response data:", response.data);
+
+    // Si ton backend renvoie { users: [...] }
+    if (response.data?.users?.length > 0) {
+      setAllUsers(response.data.users);
     }
-  };
+
+    // Si ton backend renvoie directement [...]
+    else if (Array.isArray(response.data) && response.data.length > 0) {
+      setAllUsers(response.data);
+    }
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+};
 
 // download task report
 const handleDownloadReport = async () => {}
@@ -26,7 +38,11 @@ const handleDownloadReport = async () => {}
 
     return () => {};
   }, []) 
-  
+
+  useEffect(() => {
+  console.log("allUsers updated:", allUsers);
+}, [allUsers]);
+
   return (
     <DashboardLayout activeMenu="Team Members">
       <div className="mt-5 mb-10">
