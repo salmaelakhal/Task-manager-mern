@@ -3,8 +3,10 @@ import DashboardLayout from '../../components/layouts/DashboardLayout'
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
+import { LuFileSpreadsheet } from 'react-icons/lu';
 import TaskStatusTabs from '../../components/TaskStatusTabs';
 import TaskCard from '../../components/Cards/TaskCard';
+import toast from 'react-hot-toast';
 
 const MyTasks  = () => {
 
@@ -48,7 +50,7 @@ const statusArray = [
 
 
   const handleClick = (taskId) => {
-    navigate(`/user/task-details/${taskId}`, )
+    navigate(`/user/tasks-details/${taskId}`, )
   };
 
 
@@ -61,7 +63,7 @@ const statusArray = [
     <DashboardLayout Layout activeMenu="Manage Tasks">
       <div className="my-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between">
-            <h2 className="text-xl md:text-xl font-medium">My Tasks</h2>
+            <h2 className="text-xl md:text-xl font-medium">My Taskss</h2>
 
            
         
