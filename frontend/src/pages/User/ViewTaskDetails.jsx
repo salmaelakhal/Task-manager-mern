@@ -39,7 +39,27 @@ const ViewTaskDetails = () => {
 
   // Handle todo check
 const updateTodoChecklist = async (index) => {
-  
+  const todoChecklist = [...task?.todoChecklist];
+  const taskId = id;
+
+  if (todoChecklist && todoChecklist[index]) {
+    todoChecklist[index].completed = !todoChecklist[index].completed;
+
+    try {
+      const response = await axiosInstance.put(
+        API_PATHS.TASKS.UPDATE_TODO_CHECKLIST(taskId),
+        { todoChecklist}
+      );
+
+      if (response.status === 200) {
+        setTask(response.data?.task || task);
+      }else {
+        todoChecklist[index].completed = !todoChecklist[index].completed
+      }
+    } catch (error) {
+      todoChecklist[index].completed = !todoChecklist[index].completed;
+    }
+  }
 };
 
   //  Handle attachement link click
